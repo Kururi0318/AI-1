@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ほたる提灯｜60秒で遊べる無料ブラウザゲーム</title>
+<meta name="description" content="指でなぞって提灯を動かし、夜に舞い降りるほたるの光を集める60秒のブラウザゲーム。スマホでもパソコンでも、インストール不要で無料で遊べます。">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#2E3B6B">
+<link rel="canonical" href="https://kururi0318.github.io/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%AE%3C/text%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ほたる提灯">
+<meta property="og:title" content="ほたる提灯｜60秒で遊べる無料ブラウザゲーム">
+<meta property="og:description" content="指でなぞって提灯を動かし、夜に舞い降りるほたるの光を集める60秒のブラウザゲーム。スマホでもパソコンでも、インストール不要で無料で遊べます。">
+<meta property="og:url" content="https://kururi0318.github.io/">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ほたる提灯｜60秒で遊べる無料ブラウザゲーム">
+<meta name="twitter:description" content="指でなぞって提灯を動かし、夜に舞い降りるほたるの光を集める60秒のブラウザゲーム。スマホでもパソコンでも、インストール不要で無料で遊べます。">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "VideoGame", "name": "ほたる提灯", "description": "指でなぞって提灯を動かし、夜に舞い降りるほたるの光を集める60秒のブラウザゲーム。スマホでもパソコンでも、インストール不要で無料で遊べます。", "url": "https://kururi0318.github.io/", "inLanguage": "ja", "genre": "アーケード", "applicationCategory": "Game", "operatingSystem": "Any (web browser)", "gamePlatform": "Web browser", "playMode": "SinglePlayer", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "JPY"}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;800&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky-top:#2E3B6B; --sky-mid:#6A4B79; --sky-bottom:#E0926C;
+  --hill-far:#3B3459; --hill-near:#1F1C35;
+  --ink:#FFF3DC; --ink-soft:rgba(255,243,220,.78);
+  --accent:#C8402F; --accent-ink:#FFF3DC; --flame:#F6C85F;
+  --dim-a:rgba(10,8,26,.78); --dim-b:rgba(10,8,26,.4);
+  --serif:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --sans:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --sky-top:#111737; --sky-mid:#3A2A5A; --sky-bottom:#8A4A5C;
+    --hill-far:#241F42; --hill-near:#110F22;
+  }
+}
+:root[data-theme="dark"]{
+  --sky-top:#111737; --sky-mid:#3A2A5A; --sky-bottom:#8A4A5C;
+  --hill-far:#241F42; --hill-near:#110F22;
+}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%;overscroll-behavior:none}
+body{
+  height:100%;margin:0;overflow:hidden;overscroll-behavior:none;
+  background-color:var(--sky-bottom);
+  background-image:linear-gradient(180deg,var(--sky-top) 0%,var(--sky-mid) 55%,var(--sky-bottom) 100%);
+  background-size:100% 100%;background-repeat:no-repeat;
+  color:var(--ink);font-family:var(--sans);
+}
+#stage{
+  position:relative;width:100%;height:100%;
+  touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
+}
+.hills{
+  position:absolute;left:0;right:0;width:100%;pointer-events:none;
+  bottom:calc(-1 * env(safe-area-inset-bottom,0px));
+  height:calc(17% + env(safe-area-inset-bottom,0px));
+}
+.hills .far{fill:var(--hill-far)}
+.hills .near{fill:var(--hill-near)}
+#c{position:absolute;left:0;top:0;display:block}
+
+#hud{position:absolute;left:0;right:0;top:0;padding:14px 18px 0;pointer-events:none;transition:opacity .3s}
+#stage:not([data-mode="play"]) #hud{opacity:0}
+.row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.side{text-align:right}
+#timer{font:800 30px/1 var(--serif);font-variant-numeric:tabular-nums}
+#timer.low{color:#FF9A8A}
+#score{font:800 44px/1 var(--serif);font-variant-numeric:tabular-nums}
+#best{margin-top:6px;font-size:14px;color:var(--ink-soft)}
+.fuel{margin-top:10px;height:5px;border-radius:3px;background:rgba(255,243,220,.18);overflow:hidden}
+.fuel i{display:block;height:100%;width:100%;border-radius:3px;transform-origin:left center;background:linear-gradient(90deg,#E8712F,var(--flame))}
+#combo{margin-top:10px;min-height:1.4em;font-weight:700;font-size:17px;color:var(--flame);transform-origin:left center}
+#combo.pop{animation:pop .18s ease-out}
+@keyframes pop{from{transform:scale(1.35)}to{transform:scale(1)}}
+
+#overlay{
+  position:absolute;inset:0;display:flex;padding:24px;
+  overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;
+  background:radial-gradient(ellipse at 50% 45%,var(--dim-a),var(--dim-b));
+}
+#overlay[hidden]{display:none}
+#overlay.fade{animation:fadein .5s .55s both}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.panel{width:min(400px,100%);margin:auto;text-align:center}
+.panel .title{margin:0 0 18px;font:800 clamp(40px,12vw,58px)/1.1 var(--serif);letter-spacing:.08em;text-shadow:0 0 28px rgba(246,200,95,.45)}
+.panel h2{margin:0 0 14px;font:800 clamp(28px,8vw,36px)/1.2 var(--serif);letter-spacing:.06em}
+.panel p{margin:0 0 10px;line-height:1.85;font-size:15px;color:var(--ink-soft)}
+.panel p.hint{font-size:13px;opacity:.85}
+.big{font:800 68px/1 var(--serif);color:var(--flame);font-variant-numeric:tabular-nums;margin:6px 0 10px}
+.big small{font-size:22px;margin-left:6px;color:var(--ink-soft)}
+.panel p.new{color:var(--flame);font-weight:700}
+.btn{
+  margin-top:20px;appearance:none;-webkit-appearance:none;border:0;border-radius:999px;
+  min-height:54px;padding:14px 46px;font:700 18px var(--sans);letter-spacing:.08em;
+  background:var(--accent);color:var(--accent-ink);cursor:pointer;
+}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn:focus-visible{outline:3px solid var(--flame);outline-offset:3px}
+.actions{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:22px}
+.actions .btn,.post .btn{margin-top:0;min-width:224px}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px rgba(255,243,220,.55)}
+.post{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:8px}
+.post input{
+  width:min(280px,100%);min-height:50px;padding:10px 16px;border-radius:14px;
+  border:1.5px solid rgba(255,243,220,.5);background:rgba(10,8,26,.55);
+  color:var(--ink);font:500 17px var(--sans);text-align:center;
+}
+.post input::placeholder{color:rgba(255,243,220,.5)}
+.post input:focus-visible{outline:3px solid var(--flame);outline-offset:2px}
+.panel p.status{min-height:1.4em;margin:8px 0 0;font-size:14px;color:#FF9A8A}
+.rank{list-style:none;margin:8px 0 0;padding:0;text-align:left}
+.rank li{display:flex;align-items:baseline;gap:12px;padding:7px 12px;border-radius:10px;font-size:16px}
+.rank li+li{margin-top:2px}
+.rank .n{width:2ch;text-align:right;font:800 18px var(--serif);color:var(--flame);font-variant-numeric:tabular-nums}
+.rank .nick{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank .pt{font:800 18px var(--serif);font-variant-numeric:tabular-nums}
+.rank li.me{background:rgba(246,200,95,.16);box-shadow:inset 0 0 0 1.5px rgba(246,200,95,.6)}
+.rank em{font-style:normal;font-size:12px;margin-left:8px;color:var(--flame)}
+.rank li.gap{justify-content:center;padding:0;color:var(--ink-soft)}
+@media (prefers-reduced-motion: reduce){
+  #overlay.fade,#combo.pop{animation:none}
+  #hud{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="sr-only">
+  <h1>ほたる提灯｜60秒で遊べる無料ブラウザゲーム</h1>
+  <p>ほたる提灯は、指でなぞって提灯を動かし、夜に舞い降りるほたるの光を集める無料のブラウザゲームです。スマートフォンでもパソコンでも、インストールなしで遊べます。</p>
+  <h2>遊び方</h2>
+  <ul>
+    <li>制限時間は60秒。画面を指でなぞる（パソコンではマウスや←→キー）と、提灯が左右に動きます。</li>
+    <li>ほたるを集めると灯りが戻り、続けて取るほど得点が上がります。金色のほたるは高得点です。</li>
+    <li>スズメバチに当たると灯りが減ります。灯りが消えるか、時間が切れるとゲーム終了です。</li>
+  </ul>
+</div>
+<noscript><p style="padding:24px;color:#fff">このゲームを遊ぶにはJavaScriptを有効にしてください。</p></noscript>
+<div id="stage" data-mode="title">
+  <svg class="hills" viewBox="0 0 400 100" preserveAspectRatio="none" aria-hidden="true">
+    <path class="far" d="M0 46 C50 22 90 40 150 30 S260 8 320 28 S385 30 400 24 V100 H0Z"/>
+    <path class="near" d="M0 68 C60 48 110 66 180 58 S300 44 400 62 V100 H0Z"/>
+  </svg>
+  <canvas id="c" role="img" aria-label="ほたる提灯のゲーム画面"></canvas>
+  <div id="hud" aria-hidden="true">
+    <div class="row"><div id="score">0</div><div class="side"><div id="timer">1:00</div><div id="best">ベスト 0</div></div></div>
+    <div class="fuel"><i id="fuel"></i></div>
+    <div id="combo"></div>
+  </div>
+  <div id="overlay"></div>
+</div>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const stage = $('stage'), cv = $('c'), ctx = cv.getContext('2d');
+const scoreEl = $('score'), timerEl = $('timer'), bestEl = $('best'), fuelEl = $('fuel'), comboEl = $('combo'), overlay = $('overlay');
+const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TAU = Math.PI * 2;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const rand = (a, b) => a + Math.random() * (b - a);
+
+let W = 0, H = 0, dpr = 1, k = 1;
+let mode = 'title';
+let t = 0, time = 0;
+let score = 0, fuel = 1, combo = 0, best = 0;
+let spawnTimer = 0, shake = 0;
+const player = { x: 0, tx: 0, y: 0 };
+let items = [], parts = [], pops = [], specks = [];
+const keys = { l: false, r: false };
+const LIMIT = 60, PACE = 1.5;
+const lvl = () => time * PACE;
+let lastScore = -1, lastCombo = -1, lastBest = -1, lastRem = -1;
+
+try { best = parseInt(localStorage.getItem('hotaru-best-60') || '0', 10) || 0; } catch (e) {}
+
+/* ---------- layout ---------- */
+function resize() {
+  const r = stage.getBoundingClientRect();
+  W = r.width; H = r.height;
+  dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  k = clamp(Math.min(W, H * 0.62) / 400, 0.85, 1.5);
+  player.y = H - Math.max(100 * k, H * 0.16);
+  if (mode === 'play') player.tx = clamp(player.tx, 28 * k, W - 28 * k);
+  else { player.x = player.tx = W / 2; }
+  if (!specks.length) initSpecks();
+}
+function initSpecks() {
+  specks = [];
+  for (let i = 0; i < 34; i++) specks.push({ x: Math.random(), y: Math.random(), ph: rand(0, TAU), sp: rand(.4, 1.2), s: rand(1, 2.2) });
+}
+
+/* ---------- drawing helpers ---------- */
+function glow(x, y, r, rgb, a) {
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+  g.addColorStop(0, `rgba(${rgb},${clamp(a, 0, 1)})`);
+  g.addColorStop(1, `rgba(${rgb},0)`);
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+}
+
+function drawLantern(x, y, lit) {
+  const sway = clamp(Math.sin(t * 2.1) * .035 + (player.tx - player.x) * .004, -.35, .35);
+  ctx.save();
+  ctx.translate(x, y - 56 * k);
+  ctx.rotate(sway);
+  ctx.scale(k, k);
+  ctx.strokeStyle = 'rgba(30,18,20,.85)'; ctx.lineWidth = 1.6;
+  ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 22); ctx.stroke();
+  ctx.translate(0, 56);
+  const inner = [255, 214, 140].map(c => Math.round(c * (.25 + .75 * lit)));
+  const mid = [222, 84, 52].map(c => Math.round(c * (.35 + .65 * lit)));
+  const edge = [124, 32, 30].map(c => Math.round(c * (.45 + .55 * lit)));
+  const g = ctx.createRadialGradient(0, 2, 2, 0, 0, 34);
+  g.addColorStop(0, `rgb(${inner})`); g.addColorStop(.62, `rgb(${mid})`); g.addColorStop(1, `rgb(${edge})`);
+  ctx.beginPath();
+  ctx.moveTo(-15, -29);
+  ctx.bezierCurveTo(-31, -17, -31, 17, -15, 29);
+  ctx.lineTo(15, 29);
+  ctx.bezierCurveTo(31, 17, 31, -17, 15, -29);
+  ctx.closePath();
+  ctx.fillStyle = g; ctx.fill();
+  ctx.strokeStyle = 'rgba(70,16,16,.55)'; ctx.lineWidth = 1.2;
+  for (let i = -2; i <= 2; i++) {
+    const yy = i * 11, hw = 15 + 12 * Math.cos(yy / 29 * Math.PI / 2);
+    ctx.beginPath(); ctx.moveTo(-hw, yy); ctx.quadraticCurveTo(0, yy + 3, hw, yy); ctx.stroke();
+  }
+  ctx.fillStyle = '#2A1919';
+  ctx.fillRect(-15, -34, 30, 6); ctx.fillRect(-15, 28, 30, 6);
+  ctx.strokeStyle = '#2A1919'; ctx.lineWidth = 1.4;
+  ctx.beginPath(); ctx.moveTo(0, 34); ctx.lineTo(0, 46); ctx.stroke();
+  ctx.fillStyle = '#C9A24A'; ctx.fillRect(-2, 44, 4, 9);
+  ctx.fillStyle = `rgba(50,8,8,${.55 + .2 * lit})`;
+  ctx.font = '800 20px "Shippori Mincho", "Hiragino Mincho ProN", serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('蛍', 0, 1);
+  ctx.restore();
+}
+
+function drawFly(it) {
+  const p = .6 + .4 * Math.sin(it.age * 6 + it.ph), r = it.r;
+  ctx.globalCompositeOperation = 'lighter';
+  glow(it.x, it.y + r * .4, r * 3.4, '246,196,90', .5 * p);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.save(); ctx.translate(it.x, it.y);
+  const fl = Math.abs(Math.sin(it.age * 38 + it.ph));
+  ctx.fillStyle = 'rgba(255,245,220,.45)';
+  ctx.beginPath(); ctx.ellipse(-r * .7, -r * .2, r * .9, r * .35 + fl * r * .25, -.6, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r * .7, -r * .2, r * .9, r * .35 + fl * r * .25, .6, 0, TAU); ctx.fill();
+  ctx.fillStyle = '#2B2130';
+  ctx.beginPath(); ctx.ellipse(0, -r * .3, r * .42, r * .7, 0, 0, TAU); ctx.fill();
+  ctx.fillStyle = `rgba(255,240,150,${.75 + .25 * p})`;
+  ctx.beginPath(); ctx.ellipse(0, r * .55, r * .5, r * .6, 0, 0, TAU); ctx.fill();
+  ctx.restore();
+}
+
+function drawGold(it) {
+  const p = .7 + .3 * Math.sin(it.age * 5 + it.ph);
+  ctx.globalCompositeOperation = 'lighter';
+  glow(it.x, it.y, it.r * 5, '255,226,140', .55 * p);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.save(); ctx.translate(it.x, it.y); ctx.rotate(it.age * .9);
+  const R = it.r * 1.25, r = it.r * .32;
+  ctx.fillStyle = '#FFF1B8';
+  ctx.beginPath();
+  for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, d = i % 2 ? r : R; ctx.lineTo(Math.cos(a) * d, Math.sin(a) * d); }
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+
+function drawHornet(it) {
+  const r = it.r;
+  ctx.globalCompositeOperation = 'lighter';
+  glow(it.x, it.y, r * 3, '230,70,56', .26);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.save(); ctx.translate(it.x, it.y);
+  ctx.rotate(Math.atan2(it.vy, it.vx) - Math.PI / 2);
+  const fl = Math.abs(Math.sin(it.age * 45 + it.ph));
+  ctx.fillStyle = 'rgba(235,225,240,.42)';
+  ctx.beginPath(); ctx.ellipse(-r * .9, -r * .2, r * .95, r * .3 + fl * r * .3, -.5, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r * .9, -r * .2, r * .95, r * .3 + fl * r * .3, .5, 0, TAU); ctx.fill();
+  ctx.fillStyle = '#2A1B2E';
+  ctx.beginPath(); ctx.ellipse(0, -r * .45, r * .55, r * .85, 0, 0, TAU); ctx.fill();
+  ctx.strokeStyle = '#E7A82F'; ctx.lineWidth = r * .24; ctx.lineCap = 'butt';
+  ctx.beginPath(); ctx.moveTo(-r * .5, -r * .6); ctx.quadraticCurveTo(0, -r * .35, r * .5, -r * .6); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-r * .42, -r * 1.0); ctx.quadraticCurveTo(0, -r * .75, r * .42, -r * 1.0); ctx.stroke();
+  ctx.fillStyle = '#2A1B2E';
+  ctx.beginPath(); ctx.moveTo(-r * .16, -r * 1.25); ctx.lineTo(r * .16, -r * 1.25); ctx.lineTo(0, -r * 1.6); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#4A2A34';
+  ctx.beginPath(); ctx.arc(0, r * .65, r * .42, 0, TAU); ctx.fill();
+  ctx.fillStyle = '#FF6A55';
+  ctx.beginPath(); ctx.arc(-r * .2, r * .75, r * .11, 0, TAU); ctx.arc(r * .2, r * .75, r * .11, 0, TAU); ctx.fill();
+  ctx.restore();
+}
+
+function draw() {
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  if (shake > 0 && !reduce) { const a = shake * 16 * k; ctx.translate(rand(-a, a), rand(-a, a)); }
+
+  const dark = (1 - fuel) * .55;
+  if (dark > .002) { ctx.fillStyle = `rgba(8,6,22,${dark})`; ctx.fillRect(-40, -40, W + 80, H + 80); }
+
+  ctx.globalCompositeOperation = 'lighter';
+  for (const s of specks) {
+    const x = s.x * W + Math.sin(t * .4 * s.sp + s.ph) * 14;
+    const y = s.y * H * .85 + Math.sin(t * .3 * s.sp + s.ph * 2) * 10;
+    const a = .25 + .35 * (.5 + .5 * Math.sin(t * 1.5 * s.sp + s.ph));
+    glow(x, y, 7 * s.s * k, '255,225,140', a * .5);
+    ctx.fillStyle = `rgba(255,240,190,${a})`;
+    ctx.beginPath(); ctx.arc(x, y, s.s * .8, 0, TAU); ctx.fill();
+  }
+  const lit = fuel;
+  const flick = 1 + Math.sin(t * 11) * .03 + Math.sin(t * 23.7) * .02 + (fuel < .25 ? Math.sin(t * 37) * .06 * (.25 - fuel) * 4 : 0);
+  const R = (60 + lit * 190) * k * flick;
+  glow(player.x, player.y, R, '255,176,96', .05 + .45 * lit);
+  glow(player.x, player.y, R * .42, '255,214,150', .05 + .35 * lit);
+  ctx.globalCompositeOperation = 'source-over';
+
+  for (const it of items) {
+    if (it.type === 'fly') drawFly(it);
+    else if (it.type === 'gold') drawGold(it);
+    else drawHornet(it);
+  }
+
+  ctx.globalCompositeOperation = 'lighter';
+  for (const p of parts) {
+    const a = 1 - p.life / p.max;
+    ctx.fillStyle = `rgba(${p.rgb},${a})`;
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, TAU); ctx.fill();
+  }
+  ctx.globalCompositeOperation = 'source-over';
+
+  drawLantern(player.x, player.y, lit);
+
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.font = `700 ${Math.round(18 * k)}px "Zen Kaku Gothic New", "Hiragino Sans", sans-serif`;
+  for (const p of pops) {
+    ctx.globalAlpha = clamp(p.life * 2.5, 0, 1);
+    ctx.fillStyle = p.c;
+    ctx.fillText(p.txt, p.x, p.y);
+  }
+  ctx.globalAlpha = 1;
+  ctx.restore();
+}
+
+/* ---------- game logic ---------- */
+function spawn() {
+  const r = Math.random();
+  const pH = Math.min(.10 + lvl() * .002, .28);
+  const type = r < pH ? 'hornet' : r < pH + .05 ? 'gold' : 'fly';
+  const sf = 1 + Math.min(lvl() / 70, 1.2);
+  const vy = H * (.22 + Math.random() * .12) * sf;
+  const m = 34 * k;
+  const it = { type, age: 0, ph: rand(0, TAU), bx: rand(m, W - m), x: 0, y: -24 * k, vy, vx: 0, amp: 0, freq: 0, r: 0 };
+  if (type === 'fly') { it.r = 8 * k; it.amp = rand(8, 26) * k; it.freq = rand(1.6, 3.2); }
+  else if (type === 'gold') { it.r = 12 * k; it.amp = rand(10, 22) * k; it.freq = rand(1.4, 2.4); it.vy *= 1.05; }
+  else {
+    it.r = 12 * k; it.amp = rand(0, 10) * k; it.freq = rand(3, 5); it.vy *= 1.2;
+    const fall = (player.y + 56 * k) / it.vy;
+    it.vx = (player.x - it.bx) / fall * rand(.35, .8);
+  }
+  it.x = it.bx;
+  items.push(it);
+}
+
+function burst(x, y, n, rgb, sp) {
+  for (let i = 0; i < n; i++) {
+    const a = rand(0, TAU), v = rand(.3, 1) * sp * k;
+    parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 0, max: rand(.4, .8), rgb, s: rand(1.5, 3.2) * k });
+  }
+}
+function buzz(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} }
+
+function catchFly(it) {
+  const gold = it.type === 'gold';
+  combo++;
+  const mult = Math.min(5, 1 + Math.floor(combo / 6));
+  const pts = (gold ? 50 : 10) * mult;
+  score += pts;
+  fuel = Math.min(1, fuel + (gold ? .2 : .07));
+  burst(it.x, it.y, gold ? 18 : 9, gold ? '255,232,150' : '246,200,95', gold ? 190 : 130);
+  pops.push({ x: it.x, y: it.y - 16 * k, txt: '+' + pts, life: .8, c: gold ? '#FFE9A0' : '#F6C85F' });
+  buzz(8);
+}
+function hitHornet(it) {
+  combo = 0;
+  fuel = Math.max(0, fuel - .22);
+  shake = .35;
+  burst(it.x, it.y, 16, '235,90,76', 220);
+  pops.push({ x: it.x, y: it.y - 20 * k, txt: '灯りが減った', life: .9, c: '#FF9A8A' });
+  buzz([30, 40, 30]);
+}
+
+function update(dt) {
+  t += dt;
+  if (shake > 0) shake = Math.max(0, shake - dt);
+  const live = mode === 'play';
+
+  if (live) {
+    time += dt;
+    const dir = (keys.r ? 1 : 0) - (keys.l ? 1 : 0);
+    if (dir) player.tx = clamp(player.tx + dir * 700 * k * dt, 28 * k, W - 28 * k);
+    fuel -= (.035 + Math.min(lvl(), 120) / 120 * .05) * dt;
+    spawnTimer -= dt;
+    if (spawnTimer <= 0) {
+      spawn();
+      if (lvl() > 20 && Math.random() < .25) spawn();
+      spawnTimer = Math.max(.32, .72 - lvl() * .005);
+    }
+  }
+  if (mode !== 'title') player.x += (player.tx - player.x) * Math.min(1, dt * 16);
+
+  for (let i = items.length - 1; i >= 0; i--) {
+    const it = items[i];
+    it.age += dt;
+    it.y += it.vy * dt;
+    it.bx += it.vx * dt;
+    it.x = it.bx + Math.sin(it.age * it.freq + it.ph) * it.amp;
+    if (live) {
+      const dx = it.x - player.x, dy = it.y - player.y, d2 = dx * dx + dy * dy;
+      if (it.type === 'hornet') {
+        const hr = it.r + 20 * k;
+        if (d2 < hr * hr) { hitHornet(it); items.splice(i, 1); continue; }
+      } else {
+        const cr = 46 * k;
+        if (d2 < cr * cr) { catchFly(it); items.splice(i, 1); continue; }
+      }
+    }
+    const gone = it.y > (live ? player.y + 56 * k : H + 40) || it.x < -60 * k || it.x > W + 60 * k;
+    if (gone) {
+      if (live && it.type !== 'hornet' && it.y > player.y && combo > 0) combo = 0;
+      items.splice(i, 1);
+    }
+  }
+
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const p = parts[i];
+    p.life += dt;
+    if (p.life >= p.max) { parts.splice(i, 1); continue; }
+    const d = Math.pow(.02, dt);
+    p.vx *= d; p.vy *= d;
+    p.x += p.vx * dt; p.y += p.vy * dt;
+  }
+  for (let i = pops.length - 1; i >= 0; i--) {
+    const p = pops[i];
+    p.life -= dt; p.y -= 40 * dt;
+    if (p.life <= 0) pops.splice(i, 1);
+  }
+
+  if (live) {
+    fuel = Math.max(0, fuel);
+    if (time >= LIMIT) time = LIMIT;
+    updateHUD();
+    if (time >= LIMIT) gameOver('time');
+    else if (fuel <= 0) gameOver('dark');
+  }
+}
+
+function updateHUD() {
+  if (score !== lastScore) { scoreEl.textContent = score; lastScore = score; }
+  const b = Math.max(best, score);
+  if (b !== lastBest) { bestEl.textContent = 'ベスト ' + b; lastBest = b; }
+  fuelEl.style.transform = `scaleX(${fuel.toFixed(3)})`;
+  const rem = Math.ceil(Math.max(0, LIMIT - time));
+  if (rem !== lastRem) {
+    lastRem = rem;
+    timerEl.textContent = Math.floor(rem / 60) + ':' + String(rem % 60).padStart(2, '0');
+    timerEl.classList.toggle('low', rem <= 10);
+  }
+  if (combo !== lastCombo) {
+    lastCombo = combo;
+    if (combo >= 3) {
+      const m = Math.min(5, 1 + Math.floor(combo / 6));
+      comboEl.textContent = combo + '連続' + (m > 1 ? ' ×' + m : '');
+      comboEl.classList.remove('pop'); void comboEl.offsetWidth; comboEl.classList.add('pop');
+    } else comboEl.textContent = '';
+  }
+}
+
+/* ---------- ranking (shared, via db capability) ---------- */
+let db = null, myId = null, canWrite = true, myServerBest = 0, myNick = '';
+const rank = { ready: false, error: false, entries: [] };
+
+function readNick() { try { return (localStorage.getItem('hotaru-nick') || '').slice(0, 12); } catch (e) { return ''; } }
+function saveNick(n) { try { localStorage.setItem('hotaru-nick', n); } catch (e) {} }
+
+async function initRanking() {
+  try {
+    if (!window.claude || typeof window.claude.use !== 'function') return;
+    const [d, u] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+    if (!d) return;
+    db = d;
+    if (u) {
+      myId = await u.id();
+      const c = await u.can('data.write');
+      canWrite = c !== false;
+    }
+    const refresh = () => { if (panelKind === 'rank') showPanel('rank', { focus: false }); };
+    d.collection('scores60').orderBy('best', 'desc').limit(50).onSnapshot(snap => {
+      rank.entries = snap.docs.map(x => {
+        const v = x.data() || {};
+        return { id: x.id, best: Number(v.best) || 0, nick: String(v.nick || '').slice(0, 12) };
+      }).filter(e => e.best > 0);
+      rank.ready = true; rank.error = false;
+      refresh();
+    }, () => { rank.ready = true; rank.error = true; refresh(); });
+    if (panelKind === 'title') showPanel('title', { focus: false });
+    if (myId) {
+      const s = await d.doc('scores60/' + myId).get();
+      if (s.exists) {
+        const v = s.data() || {};
+        myServerBest = Number(v.best) || 0;
+        myNick = String(v.nick || '').slice(0, 12);
+      }
+    }
+  } catch (e) {}
+}
+
+async function submitScore(raw, status, postBtn) {
+  const n = String(raw).trim().slice(0, 12);
+  status.textContent = '';
+  if (!n) { status.textContent = '名前を入力してください。'; return; }
+  postBtn.disabled = true;
+  try {
+    const ref = db.doc('scores60/' + myId);
+    const cur = await ref.get();
+    const prev = cur.exists ? Number((cur.data() || {}).best) || 0 : 0;
+    const val = Math.max(prev, lastResult.score);
+    await ref.set({ best: val, nick: n });
+    myServerBest = val; myNick = n; saveNick(n);
+    openRank('over');
+  } catch (e) {
+    status.textContent = 'うまく登録できませんでした。もう一度お試しください。';
+    postBtn.disabled = false;
+  }
+}
+
+/* ---------- screens ---------- */
+let panelKind = 'title', backKind = 'title', lastResult = { score: 0, fresh: false, reason: 'dark' };
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+function btn(label, cls, fn) {
+  const b = el('button', 'btn' + (cls ? ' ' + cls : ''), label);
+  b.type = 'button';
+  b.addEventListener('click', fn);
+  return b;
+}
+function focusEl(e) { try { e.focus({ preventScroll: true }); } catch (err) {} }
+
+function titlePanel() {
+  const p = el('div', 'panel');
+  p.append(
+    el('div', 'title', 'ほたる提灯'),
+    el('p', null, '指でなぞって提灯を動かし、舞い降りるほたるを集めます。'),
+    el('p', null, '制限時間は60秒。ほたるの光で灯りが戻ります。スズメバチに当たると灯りが減り、灯りが消えるとそこでおしまいです。'),
+    el('p', 'hint', 'パソコンではマウスや ← → キーで操作できます。')
+  );
+  const row = el('div', 'actions');
+  const go = btn('はじめる', '', start);
+  row.append(go);
+  if (db) row.append(btn('みんなのランキング', 'ghost', () => openRank('title')));
+  p.append(row);
+  p.primary = go;
+  return p;
+}
+
+function overPanel(animate) {
+  const sc = lastResult.score;
+  const p = el('div', 'panel');
+  p.append(el('h2', null, lastResult.reason === 'time' ? 'タイムアップ' : '灯りが消えました'));
+  const big = el('div', 'big', String(sc));
+  big.append(el('small', null, '点'));
+  p.append(big);
+  p.append(lastResult.fresh ? el('p', 'new', 'ベスト更新です') : el('p', null, 'ベスト ' + best + '点'));
+
+  const canPost = !!(db && myId && canWrite);
+  let hasForm = false;
+  if (canPost && sc > 0 && sc > myServerBest) {
+    hasForm = true;
+    p.append(el('p', 'hint', '名前を入れると、みんなのランキングに登録できます。'));
+    const box = el('div', 'post');
+    const input = el('input');
+    input.type = 'text'; input.maxLength = 12; input.autocomplete = 'off';
+    input.placeholder = 'なまえ（12文字まで）';
+    input.value = myNick || readNick();
+    input.setAttribute('aria-label', 'ランキングに表示する名前');
+    const status = el('p', 'status');
+    const post = btn('ランキングに登録', '', () => submitScore(input.value, status, post));
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') post.click(); });
+    box.append(input, post);
+    p.append(box, status);
+  } else if (canPost && sc > 0) {
+    p.append(el('p', 'hint', 'ランキングの自己ベストは ' + myServerBest + '点です。'));
+  } else if (db && sc > 0) {
+    p.append(el('p', 'hint', 'この共有設定では、ランキングに登録できません。'));
+  }
+
+  const row = el('div', 'actions');
+  const again = btn('もういちど', hasForm ? 'ghost' : '', start);
+  row.append(again);
+  if (db) row.append(btn('みんなのランキング', 'ghost', () => openRank('over')));
+  p.append(row);
+  if (animate) {
+    again.disabled = true;
+    setTimeout(() => {
+      again.disabled = false;
+      if (!hasForm && panelKind === 'over') focusEl(again);
+    }, 900);
+  }
+  return p;
+}
+
+function rankPanel() {
+  const p = el('div', 'panel');
+  p.append(el('h2', null, 'みんなのランキング'));
+  if (rank.error) p.append(el('p', null, 'ランキングを読み込めませんでした。'));
+  else if (!rank.ready) p.append(el('p', null, '読み込み中…'));
+  else if (!rank.entries.length) p.append(el('p', null, 'まだ登録がありません。最初の一人になりましょう。'));
+  else {
+    const es = rank.entries, nums = [];
+    es.forEach((e, i) => { nums[i] = (i > 0 && e.best === es[i - 1].best) ? nums[i - 1] : i + 1; });
+    const li = (e, n) => {
+      const row = el('li', e.id === myId ? 'me' : '');
+      const nick = el('span', 'nick', e.nick || 'ななし');
+      if (e.id === myId) nick.append(el('em', null, 'あなた'));
+      row.append(el('span', 'n', String(n)), nick, el('span', 'pt', e.best + '点'));
+      return row;
+    };
+    const ol = el('ol', 'rank');
+    es.slice(0, 10).forEach((e, i) => ol.append(li(e, nums[i])));
+    const mine = es.findIndex(e => e.id === myId);
+    if (mine >= 10) ol.append(el('li', 'gap', '…'), li(es[mine], nums[mine]));
+    p.append(ol);
+  }
+  const row = el('div', 'actions');
+  const go = btn(backKind === 'over' ? 'もういちど' : 'はじめる', '', start);
+  row.append(go, btn('もどる', 'ghost', () => showPanel(backKind)));
+  p.append(row);
+  p.primary = go;
+  return p;
+}
+
+function showPanel(kind, o) {
+  o = o || {};
+  const changed = kind !== panelKind;
+  panelKind = kind;
+  const p = kind === 'title' ? titlePanel() : kind === 'over' ? overPanel(!!o.animate) : rankPanel();
+  overlay.replaceChildren(p);
+  overlay.hidden = false;
+  overlay.className = (kind === 'over' && o.animate) ? 'fade' : '';
+  if (changed || o.animate) overlay.scrollTop = 0;
+  if (o.focus !== false && p.primary) focusEl(p.primary);
+}
+function openRank(from) { backKind = from; showPanel('rank'); }
+
+function start() {
+  mode = 'play'; stage.dataset.mode = 'play'; panelKind = 'play';
+  overlay.hidden = true;
+  items = []; parts = []; pops = [];
+  time = 0; score = 0; fuel = 1; combo = 0; spawnTimer = .5; shake = 0;
+  lastScore = lastCombo = lastBest = lastRem = -1;
+  player.tx = player.x;
+  updateHUD();
+}
+
+function gameOver(reason) {
+  mode = 'over'; stage.dataset.mode = 'over';
+  let fresh = false;
+  if (score > best) {
+    best = score; fresh = true;
+    try { localStorage.setItem('hotaru-best-60', String(best)); } catch (e) {}
+  }
+  lastResult = { score, fresh, reason };
+  backKind = 'over';
+  buzz(60);
+  showPanel('over', { animate: true, focus: false });
+}
+
+/* ---------- input ---------- */
+function setTarget(e) {
+  if (mode !== 'play') return;
+  const r = stage.getBoundingClientRect();
+  player.tx = clamp(e.clientX - r.left, 28 * k, W - 28 * k);
+}
+stage.addEventListener('pointerdown', setTarget);
+stage.addEventListener('pointermove', setTarget);
+window.addEventListener('keydown', e => {
+  if (e.target && e.target.tagName === 'INPUT') return;
+  if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') { keys.l = true; if (mode === 'play') e.preventDefault(); }
+  if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') { keys.r = true; if (mode === 'play') e.preventDefault(); }
+});
+window.addEventListener('keyup', e => {
+  if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.l = false;
+  if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.r = false;
+});
+window.addEventListener('blur', () => { keys.l = keys.r = false; });
+
+/* ---------- loop ---------- */
+let last = 0;
+function frame(now) {
+  requestAnimationFrame(frame);
+  if (!last) last = now;
+  const dt = Math.min((now - last) / 1000, .05);
+  last = now;
+  if (document.hidden) return;
+  update(dt);
+  draw();
+}
+
+if (window.ResizeObserver) new ResizeObserver(resize).observe(stage);
+window.addEventListener('resize', resize);
+resize();
+updateHUD();
+showPanel('title');
+initRanking();
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
+User-agent: *
+Allow: /
+
+Sitemap: https://kururi0318.github.io/sitemap.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://kururi0318.github.io/</loc>
+    <lastmod>2026-09-30</lastmod>
+  </url>
+</urlset>
